@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#0b3b6e"><link rel="manifest" href="manifest.json">
+<title>ميزانيتي</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#f4f7fb;color:#15253b}
+.app{max-width:480px;margin:auto;min-height:100vh;background:#f4f7fb}
+header{background:linear-gradient(145deg,#072a55,#1475b8);color:#fff;padding:20px 16px 18px;border-radius:0 0 28px 28px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:52px;height:52px;border-radius:16px;object-fit:cover}.brand h1{font-size:23px;margin:0}.sub{font-size:11px;opacity:.8;margin-top:4px}
+.balance{margin-top:16px;background:#ffffff16;border:1px solid #ffffff24;padding:14px 15px;border-radius:18px}.balance small{opacity:.78}.balance strong{display:block;font-size:28px;margin-top:4px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.card{background:#fff;border-radius:17px;padding:12px;box-shadow:0 5px 18px #153d6510}.card span{font-size:11px;color:#6b7b8e}.card b{display:block;font-size:17px;margin-top:5px}.green{color:#12956e}.red{color:#e24d5b}.blue{color:#1771ad}.gold{color:#b27a14}
+main{padding:14px 13px 92px}.title{font-size:16px;font-weight:bold;margin:15px 3px 9px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.menu{border:0;background:#fff;border-radius:17px;padding:12px 4px;box-shadow:0 5px 15px #193b5c0c;font-family:inherit;color:#18283c;font-size:11px}.ico{display:block;font-size:24px;margin-bottom:6px}
+.panel{background:#fff;border-radius:18px;padding:5px 12px;box-shadow:0 5px 16px #193b5c0c}.row{display:flex;justify-content:space-between;align-items:center;padding:12px 2px;border-bottom:1px solid #edf1f5}.row:last-child{border:0}.row small{color:#77879a}.badge{font-size:10px;padding:5px 8px;border-radius:9px;background:#fff1d7;color:#9a690e}.empty{text-align:center;color:#7a899a;padding:20px;font-size:12px}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-top:1px solid #e6ebf1;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:10}nav button{border:0;background:none;font-family:inherit;color:#718096;font-size:10px}nav i{display:block;font-style:normal;font-size:21px;margin-bottom:2px}nav .active{color:#1169a7;font-weight:bold}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:20;align-items:flex-end}.modal.show{display:flex}.sheet{width:min(480px,100%);margin:auto;background:#f7f9fc;border-radius:25px 25px 0 0;padding:18px;max-height:92vh;overflow:auto}.sheet h2{margin:0 0 14px;font-size:20px}.close{float:left;border:0;border-radius:10px;background:#e9eef4;padding:7px 10px}.field{margin:9px 0}.field label{display:block;font-size:11px;color:#68798d;margin-bottom:5px}.field input,.field select{width:100%;padding:12px;border:1px solid #dbe4ed;border-radius:12px;background:#fff;font-size:14px;font-family:inherit}.btn{width:100%;border:0;border-radius:13px;background:#116aa9;color:#fff;padding:13px;font:700 15px Tahoma;margin-top:9px}
+.tabs{display:flex;gap:7px;overflow:auto;margin:4px 0 10px}.tab{border:0;background:#eaf0f6;padding:8px 12px;border-radius:12px;font-family:inherit;white-space:nowrap;font-size:11px}.tab.active{background:#116aa9;color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><img class="logo" src="icon.png"><div><h1>ميزانيتي</h1><div class="sub">خطط • تابع • وفر</div></div></div>
+ <div class="balance"><small>الرصيد المتبقي</small><strong id="balance">0 ج.م</strong></div>
+ <div class="cards"><div class="card"><span>إجمالي الدخل</span><b id="income" class="green">0 ج.م</b></div><div class="card"><span>المصروفات</span><b id="expense" class="red">0 ج.م</b></div></div>
+</header>
+<main>
+ <div class="title">الإدارة السريعة</div>
+ <div class="grid">
+  <button class="menu" onclick="openForm('expense')"><span class="ico">💸</span>المصروفات</button>
+  <button class="menu" onclick="openForm('income')"><span class="ico">💵</span>الدخل</button>
+  <button class="menu" onclick="openForm('association')"><span class="ico">🤝</span>الجمعية</button>
+  <button class="menu" onclick="openForm('work')"><span class="ico">🗓️</span>أيام العمل</button>
+  <button class="menu" onclick="openForm('loan')"><span class="ico">💳</span>السلف</button>
+  <button class="menu" onclick="openForm('installment')"><span class="ico">📅</span>الأقساط</button>
+ </div>
+ <div class="title">الأقساط القادمة</div><div class="panel" id="upcoming"></div>
+ <div class="title">ملخص الالتزامات</div>
+ <div class="cards"><div class="card"><span>الجمعية</span><b id="assoc" class="blue">0 ج.م</b></div><div class="card"><span>السلف المتبقية</span><b id="loans" class="gold">0 ج.م</b></div></div>
+</main>
+<nav><button class="active"><i>⌂</i>الرئيسية</button><button onclick="openForm('expense')"><i>＋</i>إضافة</button><button onclick="showInstallments()"><i>▥</i>جدول الأقساط</button><button onclick="showReports()"><i>◔</i>التقارير</button></nav>
+<div class="modal" id="modal"><div class="sheet"><button class="close" onclick="closeForm()">إغلاق</button><h2 id="formTitle">إضافة</h2><div id="form"></div></div></div>
+
+<script>
+const KEY='mizanati_v2';
+let data=JSON.parse(localStorage.getItem(KEY)||'{"income":[],"expense":[],"association":[],"work":[],"loans":[],"installments":[]}');
+const money=n=>(Number(n)||0).toLocaleString('ar-EG')+' ج.م';
+const today=()=>new Date().toISOString().slice(0,10);
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function render(){
+ const inc=data.income.reduce((s,x)=>s+Number(x.amount||0),0), exp=data.expense.reduce((s,x)=>s+Number(x.amount||0),0);
+ income.textContent=money(inc);expense.textContent=money(exp);balance.textContent=money(inc-exp);
+ assoc.textContent=money(data.association.reduce((s,x)=>s+Number(x.amount||0),0));
+ loans.textContent=money(data.loans.reduce((s,x)=>s+Number(x.remaining??x.amount??0),0));
+ const list=data.installments.slice().sort((a,b)=>a.date.localeCompare(b.date)).slice(0,6);
+ upcoming.innerHTML=list.length?list.map((x,i)=>`<div class="row"><div><b>${i+1}. ${x.name}</b><br><small>${x.type} • ${x.date}</small></div><div><b class="red">${money(x.amount)}</b><br><span class="badge">${x.status||'مستحق'}</span></div></div>`).join(''):'<div class="empty">لم تتم إضافة أقساط بعد</div>';
+}
+function openForm(type){
+ const titles={expense:'إضافة مصروف',income:'إضافة دخل',association:'إضافة جمعية',work:'تسجيل أيام عمل',loan:'إضافة سلفة',installment:'إضافة قسط'};
+ formTitle.textContent=titles[type];let f='';
+ if(type==='installment') f=`<div class="field"><label>نوع القسط</label><select id="type"><option>سيارة</option><option>أجهزة</option><option>سلفة</option><option>جمعية</option><option>أخرى</option></select></div><div class="field"><label>اسم القسط</label><input id="name" placeholder="مثال: قسط العربية"></div><div class="field"><label>قيمة القسط</label><input id="amount" type="number"></div><div class="field"><label>تاريخ الاستحقاق</label><input id="date" type="date" value="${today()}"></div><div class="field"><label>رقم القسط / التسلسل</label><input id="seq" type="number" value="1"></div>`;
+ else if(type==='work') f=`<div class="field"><label>عدد أيام العمل</label><input id="days" type="number" value="1"></div><div class="field"><label>الأجر اليومي</label><input id="amount" type="number"></div><div class="field"><label>التاريخ</label><input id="date" type="date" value="${today()}"></div>`;
+ else f=`<div class="field"><label>${type==='loan'?'قيمة السلفة':'المبلغ'}</label><input id="amount" type="number"></div><div class="field"><label>التاريخ</label><input id="date" type="date" value="${today()}"></div><div class="field"><label>البيان</label><input id="name" placeholder="اكتب البيان"></div>`;
+ form.innerHTML=f+`<button class="btn" onclick="addData('${type}')">حفظ البيانات</button>`;modal.classList.add('show');
+}
+function closeForm(){modal.classList.remove('show')}
+function addData(type){
+ let amount=Number(document.getElementById('amount')?.value||0),date=document.getElementById('date')?.value||today(),name=document.getElementById('name')?.value||'بدون بيان';
+ if(!amount && type!=='installment'){alert('اكتب المبلغ أولاً');return}
+ if(type==='work'){let days=Number(document.getElementById('days').value||0);data.work.push({days,rate:amount,date});data.income.push({amount:days*amount,date,name:'أيام عمل'});}
+ else if(type==='installment') data.installments.push({type:document.getElementById('type').value,name,amount,date,seq:Number(document.getElementById('seq').value||1),status:'مستحق'});
+ else if(type==='income')data.income.push({amount,date,name});
+ else if(type==='expense')data.expense.push({amount,date,name});
+ else if(type==='association')data.association.push({amount,date,name});
+ else if(type==='loan')data.loans.push({amount,remaining:amount,date,name});
+ save();closeForm();
+}
+function showInstallments(){
+ let rows=data.installments.slice().sort((a,b)=>a.date.localeCompare(b.date));
+ formTitle.textContent='جدول الأقساط';form.innerHTML='<div class="tabs"><button class="tab active">الكل</button><button class="tab">سيارة</button><button class="tab">أجهزة</button><button class="tab">سلفة</button><button class="tab">جمعية</button></div>'+
+ (rows.length?rows.map((x,i)=>`<div class="row"><div><b>${x.seq||i+1}. ${x.name}</b><br><small>${x.type} • استحقاق ${x.date}</small></div><div><b>${money(x.amount)}</b><br><span class="badge">${x.status||'مستحق'}</span></div></div>`).join(''):'<div class="empty">لا توجد أقساط</div>')+
+ '<button class="btn" onclick="closeForm();openForm(\\'installment\\')">+ إضافة قسط</button>';modal.classList.add('show');
+}
+function showReports(){
+ const inc=data.income.reduce((s,x)=>s+Number(x.amount||0),0),exp=data.expense.reduce((s,x)=>s+Number(x.amount||0),0);
+ formTitle.textContent='التقارير';form.innerHTML=`<div class="cards"><div class="card"><span>الدخل</span><b class="green">${money(inc)}</b></div><div class="card"><span>المصروفات</span><b class="red">${money(exp)}</b></div></div><div class="title">عدد السجلات</div><div class="panel"><div class="row"><span>مصروفات</span><b>${data.expense.length}</b></div><div class="row"><span>أقساط</span><b>${data.installments.length}</b></div><div class="row"><span>سلف</span><b>${data.loans.length}</b></div><div class="row"><span>جمعيات</span><b>${data.association.length}</b></div></div>`;modal.classList.add('show');
+}
+render();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</div>
+</body></html>
